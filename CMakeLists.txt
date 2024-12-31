@@ -37,8 +37,11 @@ else()
   add_executable(YahBoom
     src/main.cpp
     src/base.cpp
+    src/videowidget.cpp
     include/base.h
+    include/videowidget.h
     src/base.ui
+    src/videowidget.ui
   )
 endif()
 
