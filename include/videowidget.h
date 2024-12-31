@@ -40,6 +40,7 @@ public:
 
 private:
   Ui::VideoWidget *ui;
+  int videoIP = 8187;    // 用于接受识别结果的IP
   QTcpSocket *tcpSocket; // TCP连接
   QTcpServer *server;
   QTimer *frameTimer;         // 定时器，用于处理视频帧更新

@@ -13,7 +13,7 @@ base::base(QWidget *parent) : QMainWindow(parent), ui(new Ui::base) {
 
   // 创建 TCP 套接字并连接到远程主机（替换为目标主机的 IP 和端口）
   socket.connectToHost(QHostAddress::LocalHost,
-                       8189); // 连接到本地（或远程机器的 IP）
+                       commandIP); // 连接到本地（或远程机器的 IP）
   if (!socket.waitForConnected()) {
     qDebug() << "Failed to connect to host!";
   }

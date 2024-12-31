@@ -7,7 +7,7 @@ VideoWidget::VideoWidget(QWidget *parent)
   ui->setupUi(this);
 
   // 启动TCP服务器，监听端口
-  if (!server->listen(QHostAddress::LocalHost, 8188)) {
+  if (!server->listen(QHostAddress::LocalHost, videoIP)) {
     qDebug() << "Failed to start server!";
     return;
   }
@@ -81,7 +81,8 @@ void VideoWidget::updateVideoFrame(const QImage &image) {
   double scaleY = (double)scaledPixmap.height() / pixmap.height();
 
   // 绘制边框
-  drawBoundingBoxes(scaledPixmap, scaleX, scaleY);
+  // drawBoundingBoxes(scaledPixmap, scaleX, scaleY);
+  // todo:也许边框可以预先在python处理
 
   // 设置视频帧到标签
   ui->label->setPixmap(scaledPixmap);
