@@ -24,25 +24,31 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #    endif()
 #endif()
 
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
+find_package(Qt5 COMPONENTS
+        Widgets
+        Network
+        REQUIRED)
 
-if(ANDROID)
-  add_library(YahBoom SHARED
-    src/main.cpp
-    src/base.cpp
-    include/base.h
-    src/base.ui
-  )
-else()
-  add_executable(YahBoom
-    src/main.cpp
-    src/base.cpp
-    src/videowidget.cpp
-    include/base.h
-    include/videowidget.h
-    src/base.ui
-    src/videowidget.ui
-  )
-endif()
+if (ANDROID)
+    add_library(YahBoom SHARED
+            src/main.cpp
+            src/base.cpp
+            include/base.h
+            src/base.ui
+            )
+else ()
+    add_executable(YahBoom
+            src/main.cpp
+            src/base.cpp
+            src/videowidget.cpp
+            include/base.h
+            include/videowidget.h
+            src/base.ui
+            src/videowidget.ui
+            )
+endif ()
 
-target_link_libraries(YahBoom PRIVATE Qt5::Widgets)
+target_link_libraries(YahBoom PRIVATE
+        Qt5::Widgets
+        Qt5::Network
+        )
