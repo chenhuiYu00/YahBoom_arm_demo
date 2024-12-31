@@ -29,6 +29,8 @@ find_package(Qt5 COMPONENTS
         Network
         REQUIRED)
 
+find_package(OpenCV REQUIRED)
+
 if (ANDROID)
     add_library(YahBoom SHARED
             src/main.cpp
@@ -48,7 +50,18 @@ else ()
             )
 endif ()
 
+add_executable(tcpTest
+        src/utils/tcptestnode.cpp
+        )
+
 target_link_libraries(YahBoom PRIVATE
         Qt5::Widgets
         Qt5::Network
+        ${OpenCV_LIBS}
+        )
+
+target_link_libraries(tcpTest PRIVATE
+        Qt5::Widgets
+        Qt5::Network
+        ${OpenCV_LIBS}
         )
