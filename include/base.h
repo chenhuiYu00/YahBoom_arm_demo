@@ -10,6 +10,7 @@
 #include <QStatusBar>
 #include <QTcpSocket>
 #include <QTimer>
+#include <QtNetwork>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -30,7 +31,8 @@ private slots:
 
 private:
   Ui::base *ui;
-  int commandIP = 8189;      // 用于发送控制指令的IP
+  const int commandPort = 8189; // 用于发送控制指令的IP
+  const QString commandIP = "127.0.0.1";
   QTcpSocket socket;         // 用于与远程设备通信的 TCP 套接字
   QTimer *timer;             // 定时器，用于定期读取滑块值并发送
   QLabel *statusCircleLabel; // 用于显示连接状态圆圈的标签
