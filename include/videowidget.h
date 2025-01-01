@@ -38,6 +38,8 @@ public:
   explicit VideoWidget(QWidget *parent = nullptr);
   ~VideoWidget();
 
+  QAbstractSocket::SocketState getSocketState() { return tcpSocket->state(); }
+
 private:
   Ui::VideoWidget *ui;
   int videoIP = 8187;    // 用于接受识别结果的IP

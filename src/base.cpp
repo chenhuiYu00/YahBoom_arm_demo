@@ -27,26 +27,36 @@ base::~base() {
 
 void base::initStatusBar() { // 创建 QLabel 来显示连接状态的圆圈和文字
   statusCircleLabel = new QLabel(this);
-  statusTextLabel = new QLabel("未连接", this);
-  QWidget *spacer = new QWidget(this); // 创建一个 spacer，用来添加左侧空白间距
+  statusTextLabel = new QLabel("指令端", this);
+  videoStatusCircleLabel = new QLabel(this);
+  videoStatusTextLabel = new QLabel("视频", this);
+  QWidget *spacer = new QWidget(this),
+          *spacer2 = new QWidget(this); // 创建一个 spacer，用来添加左侧空白间距
   spacer->setFixedWidth(6); // 设置空白区域的宽度
+  spacer2->setFixedWidth(6);
 
   // 设置圆圈标签的大小
   statusCircleLabel->setFixedSize(20, 20);
+  videoStatusCircleLabel->setFixedSize(20, 20);
   statusCircleLabel->setStyleSheet(
+      "background-color: red; border-radius: 10px;");
+  videoStatusCircleLabel->setStyleSheet(
       "background-color: red; border-radius: 10px;");
 
   // 将 spacer、圆圈和文字添加到 statusBar
   statusBar()->addWidget(spacer); // 添加空白区域
   statusBar()->addWidget(statusCircleLabel);
   statusBar()->addWidget(statusTextLabel);
+  statusBar()->addWidget(spacer2);
+  statusBar()->addWidget(videoStatusCircleLabel);
+  statusBar()->addWidget(videoStatusTextLabel);
 
   // 创建 TCP 套接字并连接信号槽
   connect(&socket, &QTcpSocket::connected, this, [=]() {
-    updateConnectionStatus(true); // 更新为已连接
+    updateConnectionStatus(statusCircleLabel, true); // 更新为已连接
   });
   connect(&socket, &QTcpSocket::disconnected, this, [=]() {
-    updateConnectionStatus(false); // 更新为未连接
+    updateConnectionStatus(statusCircleLabel, false); // 更新为未连接
   });
 }
 
@@ -70,16 +80,12 @@ void base::updateMenuBar() {
     ui->recentModel->setTitle("当前模式：直控");
 }
 
-void base::updateConnectionStatus(bool connected) {
+void base::updateConnectionStatus(QLabel *circle, bool connected) {
   // 根据连接状态更新圆圈颜色和状态文本
   if (connected) {
-    statusCircleLabel->setStyleSheet(
-        "background-color: green; border-radius: 10px;");
-    statusTextLabel->setText("已连接");
+    circle->setStyleSheet("background-color: green; border-radius: 10px;");
   } else {
-    statusCircleLabel->setStyleSheet(
-        "background-color: red; border-radius: 10px;");
-    statusTextLabel->setText("未连接");
+    circle->setStyleSheet("background-color: red; border-radius: 10px;");
   }
 }
 
@@ -93,18 +99,10 @@ void base::sendCommand() {
   // 获取滑块的值并转换为字节
   for (int i = 0; i < 6; ++i) {
     auto *slider = findChild<QSlider *>(QString("horizontalSlider_%1").arg(i));
-    auto *label = findChild<QLabel *>(QString("label_%1").arg(i));
-
-    if (slider && label) {
-      int sliderValue = slider->value(); // 获取滑块的值，范围 0-99
-      int angle = static_cast<int>((sliderValue / 99.0) * 180); // 映射到 0-180
-      // 显示在label上，格式为 "序号: 角度" (格式对齐)
-      label->setText(QString("%1: %2").arg(i).arg(
-          angle, 3, 10, QChar('0'))); // 角度固定宽度3位数，0填充
-
-      byteArray.append(
-          static_cast<char>(angle)); // 将角度值作为字节添加到字节数组
-    }
+    int sliderValue = slider->value(); // 获取滑块的值，范围 0-99
+    int angle = static_cast<int>((sliderValue / 99.0) * 180); // 映射到 0-180
+    byteArray.append(
+        static_cast<char>(angle)); // 将角度值作为字节添加到字节数组
   }
 
   // 发送数据到远程设备
@@ -113,4 +111,26 @@ void base::sendCommand() {
   qDebug() << "Data sent: " << byteArray.toHex();
 }
 
-void base::onTimeout() { sendCommand(); }
+void base::onTimeout() {
+  // 更新视频状态图标
+  updateConnectionStatus(videoStatusCircleLabel,
+                         ui->widget_video->getSocketState() ==
+                             QAbstractSocket::ConnectedState);
+
+  // 更新滑块数值
+  for (int i = 0; i < 6; ++i) {
+    auto *slider = findChild<QSlider *>(QString("horizontalSlider_%1").arg(i));
+    auto *label = findChild<QLabel *>(QString("label_%1").arg(i));
+
+    if (slider && label) {
+      int sliderValue = slider->value(); // 获取滑块的值，范围 0-99
+      int angle = static_cast<int>((sliderValue / 99.0) * 180); // 映射到 0-180
+      // 显示在label上，格式为 "序号: 角度" (格式对齐)
+      label->setText(QString("%1: %2").arg(i).arg(
+          angle, 3, 10, QChar('0'))); // 角度固定宽度3位数，0填充
+    }
+  }
+
+  if (socket.state() == QAbstractSocket::ConnectedState)
+    sendCommand();
+}
