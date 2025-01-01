@@ -40,6 +40,7 @@ private:
   QLabel *statusCircleLabel,
       *videoStatusCircleLabel; // 用于显示连接状态圆圈的标签
   QLabel *statusTextLabel, *videoStatusTextLabel; // 用于显示连接状态文字的标签
+  QLabel *statusKBSLabel;                         // 显示传输速率
 
   void initStatusBar();
   void updateMenuBar();

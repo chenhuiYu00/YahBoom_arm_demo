@@ -3,7 +3,8 @@
 
 VideoWidget::VideoWidget(QWidget *parent)
     : QWidget(parent), ui(new Ui::VideoWidget), tcpSocket(new QTcpSocket(this)),
-      server(new QTcpServer(this)), frameTimer(new QTimer(this)) {
+      server(new QTcpServer(this)), frameTimer(new QTimer(this)),
+      rateTimer(new QTimer(this)) {
   ui->setupUi(this);
 
   // 启动TCP服务器，监听端口
@@ -21,6 +22,8 @@ VideoWidget::VideoWidget(QWidget *parent)
   // 设置定时器，定时刷新视频帧
   frameTimer->start(30); // 每30毫秒更新一次视频帧
   connect(frameTimer, &QTimer::timeout, this, &VideoWidget::onTimeout);
+
+  initKBS();
 }
 
 VideoWidget::~VideoWidget() {
@@ -30,6 +33,31 @@ VideoWidget::~VideoWidget() {
   }
   server->close();
   delete ui;
+}
+
+void VideoWidget::initKBS() {
+  lastTime = QDateTime::currentMSecsSinceEpoch();
+  // 初始化定时器，每秒更新码率
+  connect(rateTimer, &QTimer::timeout, this, [=]() {
+    // 每秒计算一次码率
+    qint64 currentTime = QDateTime::currentMSecsSinceEpoch();
+    qint64 elapsedTime = currentTime - lastTime;
+
+    // 如果时间差大于1秒，计算码率
+    if (elapsedTime > 1000) {
+      qint64 bytesPerSecond =
+          totalReceivedBytes / (elapsedTime / 1000.0); // 计算每秒字节数
+      kbs = bytesPerSecond / 1024.0;                   // 转为 KBps
+
+      // 重置时间和字节计数
+      lastTime = currentTime;
+      totalReceivedBytes = 0;
+
+      qDebug() << totalReceivedBytes;
+    }
+  });
+
+  rateTimer->start(1000); // 每秒更新一次码率
 }
 
 void VideoWidget::onNewConnection() {
@@ -55,6 +83,9 @@ void VideoWidget::onReadyRead() {
     qDebug() << "Received invalid frame size: " << data.size();
     return; // 丢弃数据
   }
+
+  // 更新总接收字节数
+  totalReceivedBytes += data.size();
 
   // 假设视频数据已经是完整的一帧，进行解码（此处简单示例，实际可能需要根据协议进行拆包）
   // 例如解码JPEG帧

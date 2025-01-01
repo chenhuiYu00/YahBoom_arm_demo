@@ -30,10 +30,14 @@ void base::initStatusBar() { // 创建 QLabel 来显示连接状态的圆圈和�
   statusTextLabel = new QLabel("指令端", this);
   videoStatusCircleLabel = new QLabel(this);
   videoStatusTextLabel = new QLabel("视频", this);
-  QWidget *spacer = new QWidget(this),
-          *spacer2 = new QWidget(this); // 创建一个 spacer，用来添加左侧空白间距
+  statusKBSLabel = new QLabel(this);
+  statusKBSLabel->setText("Bitrate: 0 KBps"); // 初始显示0
+
+  QWidget *spacer = new QWidget(this), *spacer2 = new QWidget(this),
+          *spacer3 = new QWidget(this); // 创建一个 spacer，用来添加左侧空白间距
   spacer->setFixedWidth(6); // 设置空白区域的宽度
   spacer2->setFixedWidth(6);
+  spacer3->setFixedWidth(6);
 
   // 设置圆圈标签的大小
   statusCircleLabel->setFixedSize(20, 20);
@@ -50,6 +54,8 @@ void base::initStatusBar() { // 创建 QLabel 来显示连接状态的圆圈和�
   statusBar()->addWidget(spacer2);
   statusBar()->addWidget(videoStatusCircleLabel);
   statusBar()->addWidget(videoStatusTextLabel);
+  statusBar()->addWidget(spacer3);
+  statusBar()->addWidget(statusKBSLabel);
 
   // 创建 TCP 套接字并连接信号槽
   connect(&socket, &QTcpSocket::connected, this, [=]() {
@@ -116,6 +122,9 @@ void base::onTimeout() {
   updateConnectionStatus(videoStatusCircleLabel,
                          ui->widget_video->getSocketState() ==
                              QAbstractSocket::ConnectedState);
+  // 更新传输速率
+  statusKBSLabel->setText(
+      QString("ByteRate: %1 KB/s").arg(ui->widget_video->getKBS()));
 
   // 更新滑块数值
   for (int i = 0; i < 6; ++i) {

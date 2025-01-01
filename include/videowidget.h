@@ -39,6 +39,7 @@ public:
   ~VideoWidget();
 
   QAbstractSocket::SocketState getSocketState() { return tcpSocket->state(); }
+  qfloat16 getKBS() { return kbs; };
 
 private:
   Ui::VideoWidget *ui;
@@ -48,6 +49,12 @@ private:
   QTimer *frameTimer;         // 定时器，用于处理视频帧更新
   QByteArray videoDataBuffer; // 存储接收到的完整视频帧数据
 
+  QTimer *rateTimer;         // 用于定时计算和更新码率
+  qint64 totalReceivedBytes; // 总接收到的字节数
+  qint64 lastTime;           // 上次计算码率的时间（毫秒）
+  qfloat16 kbs;
+
+  void initKBS();
   void onNewConnection();
   void updateVideoFrame(const QImage &image); // 更新视频帧的处理函数
   void drawBoundingBoxes(QPixmap &pixmap, double scaleX,
