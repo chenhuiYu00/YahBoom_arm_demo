@@ -10,6 +10,7 @@ base::base(QWidget *parent) : QMainWindow(parent), ui(new Ui::base) {
   timer->start(50); // 每50毫秒触发一次
 
   initStatusBar();
+  initMenuBar();
 
   // 创建 TCP 套接字并连接到远程主机（替换为目标主机的 IP 和端口）
   socket.connectToHost(commandIP,
@@ -49,6 +50,26 @@ void base::initStatusBar() { // 创建 QLabel 来显示连接状态的圆圈和�
   });
 }
 
+void base::initMenuBar() {
+  connect(ui->action_control, &QAction::triggered, this, [=]() {
+    recentModel = 0;
+    updateMenuBar();
+  });
+  connect(ui->action_detection, &QAction::triggered, this, [=]() {
+    recentModel = 1;
+    updateMenuBar();
+  });
+
+  updateMenuBar();
+}
+
+void base::updateMenuBar() {
+  if (recentModel)
+    ui->recentModel->setTitle("当前模式：识别");
+  else
+    ui->recentModel->setTitle("当前模式：直控");
+}
+
 void base::updateConnectionStatus(bool connected) {
   // 根据连接状态更新圆圈颜色和状态文本
   if (connected) {
@@ -65,6 +86,9 @@ void base::updateConnectionStatus(bool connected) {
 void base::sendCommand() {
   // 获取所有滑块的值并封装到字节数组中
   QByteArray byteArray;
+
+  byteArray.append(static_cast<char>(recentModel));
+  byteArray.append(static_cast<char>(detection));
 
   // 获取滑块的值并转换为字节
   for (int i = 0; i < 6; ++i) {

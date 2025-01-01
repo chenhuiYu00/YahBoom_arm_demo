@@ -14,13 +14,13 @@
    <string>Form</string>
   </property>
   <property name="styleSheet">
-   <string notr="true"> background-color: rgb(237, 212, 0)</string>
+   <string notr="true"/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>TextLabel</string>
+      <string/>
      </property>
     </widget>
    </item>
