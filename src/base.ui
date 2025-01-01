@@ -172,7 +172,7 @@ background:rgb(211, 215, 207);</string>
              <item row="5" column="1">
               <widget class="QLabel" name="label_5">
                <property name="text">
-                <string>motor5l</string>
+                <string>motor5</string>
                </property>
               </widget>
              </item>
@@ -200,7 +200,7 @@ background:rgb(211, 215, 207);</string>
        </size>
       </property>
       <property name="styleSheet">
-       <string notr="true">background:rgb(243, 243, 243)</string>
+       <string notr="true">QWidget{background: rgb(243, 243, 243);}</string>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
@@ -229,8 +229,25 @@ border-radius:10px;</string>
        </item>
        <item>
         <widget class="QPushButton" name="pushButton_closePy">
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
          <property name="styleSheet">
-          <string notr="true">background:rgb(211, 215, 207)</string>
+          <string notr="true">QPushButton {
+background-color: rgb(196, 199, 192); /* 默认绿色背景 */
+color: black; /* 白色字体 */
+border: none; /* 无边框 */
+border-radius: 5px; /* 圆角 */
+padding: 8px 16px; /* 内边距 */
+font-size: 15px; /* 字体大小 */
+font-weight: bold; /* 加粗字体 */
+}
+QPushButton:hover {
+    background-color: rgb(186, 189, 182);
+}
+QPushButton:pressed {
+    background-color: rgb(176, 179, 172);
+}</string>
          </property>
          <property name="text">
           <string>关闭脚本</string>
@@ -239,8 +256,25 @@ border-radius:10px;</string>
        </item>
        <item>
         <widget class="QPushButton" name="pushButton_startPy">
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
          <property name="styleSheet">
-          <string notr="true">background:rgb(211, 215, 207)</string>
+          <string notr="true">QPushButton {
+background-color: rgb(196, 199, 192); /* 默认绿色背景 */
+color: black; /* 白色字体 */
+border: none; /* 无边框 */
+border-radius: 5px; /* 圆角 */
+padding: 8px 16px; /* 内边距 */
+font-size: 15px; /* 字体大小 */
+font-weight: bold; /* 加粗字体 */
+}
+QPushButton:hover {
+    background-color: rgb(186, 189, 182);
+}
+QPushButton:pressed {
+    background-color: rgb(176, 179, 172);
+}</string>
          </property>
          <property name="text">
           <string>启动脚本</string>
