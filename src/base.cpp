@@ -11,6 +11,7 @@ base::base(QWidget *parent) : QMainWindow(parent), ui(new Ui::base) {
 
   initStatusBar();
   initMenuBar();
+  initPython();
 
   // 创建 TCP 套接字并连接到远程主机（替换为目标主机的 IP 和端口）
   socket.connectToHost(commandIP,
@@ -23,6 +24,18 @@ base::base(QWidget *parent) : QMainWindow(parent), ui(new Ui::base) {
 base::~base() {
   delete ui;
   socket.close(); // 关闭连接
+}
+
+void base::initPython() {
+  pythonThread = new PythonThread("/home/yuchen/Fdisk/Projects/YahBoom/YahBoom/"
+                                  "detection.py",
+                                  *ui->textBrowser_PyOut, this);
+  connect(ui->pushButton_startPy, &QPushButton::clicked, this,
+          [=]() { emit pythonThread->startPython(); });
+  connect(ui->pushButton_closePy, &QPushButton::clicked, this,
+          [=]() { emit pythonThread->shutDownPython(); });
+
+  pythonThread->start();
 }
 
 void base::initStatusBar() { // 创建 QLabel 来显示连接状态的圆圈和文字

@@ -7,10 +7,14 @@
 #include <QMainWindow>
 #include <QPainter>
 #include <QPixmap>
+#include <QProcess>
 #include <QStatusBar>
+#include <QStringList>
 #include <QTcpSocket>
 #include <QTimer>
 #include <QtNetwork>
+
+#include "include/pythonThread.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -42,6 +46,9 @@ private:
   QLabel *statusTextLabel, *videoStatusTextLabel; // 用于显示连接状态文字的标签
   QLabel *statusKBSLabel;                         // 显示传输速率
 
+  PythonThread *pythonThread;
+
+  void initPython();
   void initStatusBar();
   void updateMenuBar();
   void initMenuBar();

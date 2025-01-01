@@ -43,8 +43,10 @@ else ()
             src/main.cpp
             src/base.cpp
             src/videowidget.cpp
+            src/pythonThread.cpp
             include/base.h
             include/videowidget.h
+            include/pythonThread.h
             src/base.ui
             src/videowidget.ui
             )

@@ -16,16 +16,24 @@ int main(int argc, char *argv[]) {
     return -1;
   }
 
-  // 2. 创建TCP连接
   QTcpSocket socket;
-  socket.connectToHost(QHostAddress::LocalHost,
-                       8188); // 连接到本地（或者目标IP）
-  if (!socket.waitForConnected()) {
-    qDebug() << "Failed to connect to host!";
-    return -1;
-  }
+  bool connected = false;
 
   while (true) {
+    if (!connected) {
+      // 2. 创建TCP连接
+      socket.connectToHost(QHostAddress::LocalHost,
+                           8188); // 连接到本地（或者目标IP）
+      if (socket.waitForConnected(5000)) {
+        qDebug() << "Successfully connected to host.";
+        connected = true;
+      } else {
+        qDebug() << "Failed to connect to host, retrying in 1 seconds...";
+        QThread::sleep(1); // 等待 1 秒后重试
+        continue;
+      }
+    }
+
     cv::Mat frame;
     cap >> frame; // 捕获一帧
 
@@ -39,13 +47,18 @@ int main(int argc, char *argv[]) {
     QByteArray byteArray(reinterpret_cast<const char *>(buf.data()),
                          buf.size());
 
-    // 4. 发送帧大小和帧数据
-    socket.write(byteArray);
-    socket.waitForBytesWritten();
+    // 4. 在写数据之前检查连接状态
+    if (socket.state() == QAbstractSocket::ConnectedState) {
+      socket.write(byteArray);
+      socket.waitForBytesWritten();
+    } else {
+      qDebug() << "Connection is closed, stopping sending data.";
+      connected = false; // 断开连接，重新连接
+    }
 
     // 控制发送帧的速率（例如，每秒发送25帧）
     QThread::msleep(40);
   }
 
-  return a.exec();
+  return QCoreApplication::exec();
 }
