@@ -30,6 +30,7 @@ VideoWidget::~VideoWidget() {
   if (tcpSocket) {
     tcpSocket->disconnectFromHost();
     tcpSocket->waitForDisconnected();
+    qDebug() << "Tcp socket closed";
   }
   server->close();
   delete ui;
@@ -52,8 +53,6 @@ void VideoWidget::initKBS() {
       // 重置时间和字节计数
       lastTime = currentTime;
       totalReceivedBytes = 0;
-
-      qDebug() << totalReceivedBytes;
     }
   });
 
@@ -87,7 +86,7 @@ void VideoWidget::onReadyRead() {
   // 更新总接收字节数
   totalReceivedBytes += data.size();
 
-  // 假设视频数据已经是完整的一帧，进行解码（此处简单示例，实际可能需要根据协议进行拆包）
+  // 假设视频数据已经是完整的一帧，进行解码
   // 例如解码JPEG帧
   QImage img;
   if (img.loadFromData(videoDataBuffer)) {
