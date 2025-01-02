@@ -69,32 +69,48 @@ void VideoWidget::onNewConnection() {
 }
 
 void VideoWidget::onReadyRead() {
+  static QByteArray data;
+  static quint32 frameSize = 0;
+
   if (!tcpSocket) {
     qDebug() << "False tcp, return";
     return;
   }
 
-  // 读取数据并保存到缓存中
-  QByteArray data = tcpSocket->readAll();
-  videoDataBuffer.append(data);
-
-  if (data.size() < 128) {
-    qDebug() << "Received invalid frame size: " << data.size();
-    return; // 丢弃数据
-  }
-
+  QByteArray rec = tcpSocket->readAll();
+  data.append(rec);
   // 更新总接收字节数
-  totalReceivedBytes += data.size();
+  totalReceivedBytes += rec.size();
 
-  // 假设视频数据已经是完整的一帧，进行解码
-  // 例如解码JPEG帧
-  QImage img;
-  if (img.loadFromData(videoDataBuffer)) {
-    // 视频帧更新
-    updateVideoFrame(img);
-    videoDataBuffer.clear(); // 清空缓存，准备接收下一帧
-  } else {
-    qDebug() << "Unpack img fail";
+  while (data.size() >= sizeof(quint32)) {
+    if (frameSize == 0) {
+      // 读取消息的大小
+      QDataStream stream(data);
+      stream >> frameSize;
+      data.remove(0, sizeof(quint32));
+    }
+    // qDebug() << frameSize;
+
+    if (data.size() >= frameSize) {
+      // 完整的数据包，提取并显示
+      QByteArray frameData = data.left(static_cast<int>(frameSize));
+      data.remove(0, static_cast<int>(frameSize));
+      qDebug() << frameData.size() << " & " << data.size() << " & "
+               << frameSize;
+
+      // 将图像数据加载为 QImage 并显示
+      QImage image;
+      if (image.loadFromData(frameData)) {
+        // 视频帧更新
+        qDebug() << "ima size: " << image.size();
+        updateVideoFrame(image);
+      } else {
+        qDebug() << "Unpack img fail";
+      }
+      frameSize = 0;
+    } else {
+      break; // 等待更多数据
+    }
   }
 }
 

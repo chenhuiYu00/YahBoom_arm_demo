@@ -46,8 +46,7 @@ private:
   int videoIP = 8187;    // 用于接受识别结果的IP
   QTcpSocket *tcpSocket; // TCP连接
   QTcpServer *server;
-  QTimer *frameTimer;         // 定时器，用于处理视频帧更新
-  QByteArray videoDataBuffer; // 存储接收到的完整视频帧数据
+  QTimer *frameTimer; // 定时器，用于处理视频帧更新
 
   QTimer *rateTimer;         // 用于定时计算和更新码率
   qint64 totalReceivedBytes; // 总接收到的字节数
