@@ -5,6 +5,7 @@ import sys
 import time
 
 import cv2
+import torch
 
 host = '192.168.1.11'
 port = 8188
@@ -12,6 +13,8 @@ qtPort = 8187
 
 
 def start_client(host='127.0.0.1', port=12345):
+    print(f"Using torch version: {torch.__version__}")
+    sys.stdout.flush()
     while True:
         try:
             client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -54,7 +57,7 @@ def start_client(host='127.0.0.1', port=12345):
                 frame = cv2.imdecode(encoded_frame, cv2.IMREAD_COLOR)
 
                 frame = cv2.resize(frame, (640, 480))
-                #cv2.imshow("Video Stream", frame)
+                # cv2.imshow("Video Stream", frame)
 
                 ######深度处理########
 
@@ -64,7 +67,7 @@ def start_client(host='127.0.0.1', port=12345):
                 # 将视频帧编码成 JPEG 格式，并转发到 Qt
                 _, encoded_frame = cv2.imencode('.jpg', frame)
                 img_bytes = encoded_frame.tobytes()
-                #frame_data = pickle.dumps(encoded_frame)  # 使用 pickle 序列化数据,不能用因为发给QT解包不出来
+                # frame_data = pickle.dumps(encoded_frame)  # 使用 pickle 序列化数据,不能用因为发给QT解包不出来
                 message_size = struct.pack("!I", len(img_bytes))  # 数据包大小
                 # 发送数据包到 Qt 客户端
                 client_socket_qt.sendall(message_size + img_bytes)

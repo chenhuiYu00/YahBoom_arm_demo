@@ -27,9 +27,10 @@ base::~base() {
 }
 
 void base::initPython() {
-  pythonThread = new PythonThread("/home/yuchen/Fdisk/Projects/YahBoom/YahBoom/"
-                                  "detection.py",
-                                  *ui->textBrowser_PyOut, this);
+  pythonThread =
+      new PythonThread("/home/yuchen/Fdisk/Projects/YahBoom/YahBoom/python/"
+                       "detection.py",
+                       *ui->textBrowser_PyOut, this);
   connect(ui->pushButton_startPy, &QPushButton::clicked, this,
           [=]() { emit pythonThread->startPython(); });
   connect(ui->pushButton_closePy, &QPushButton::clicked, this,

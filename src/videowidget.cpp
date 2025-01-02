@@ -95,14 +95,11 @@ void VideoWidget::onReadyRead() {
       // 完整的数据包，提取并显示
       QByteArray frameData = data.left(static_cast<int>(frameSize));
       data.remove(0, static_cast<int>(frameSize));
-      qDebug() << frameData.size() << " & " << data.size() << " & "
-               << frameSize;
 
       // 将图像数据加载为 QImage 并显示
       QImage image;
       if (image.loadFromData(frameData)) {
         // 视频帧更新
-        qDebug() << "ima size: " << image.size();
         updateVideoFrame(image);
       } else {
         qDebug() << "Unpack img fail";
