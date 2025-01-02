@@ -36,11 +36,12 @@ private slots:
 
 private:
   Ui::base *ui;
-  const int commandPort = 8189; // 用于发送控制指令的IP
-  const QString commandIP = "127.0.0.1";
+  const int commandPort = 8189;       // 用于发送控制指令的IP
   int recentModel = 0, detection = 0; // 表示当前模式/识别结果
-  QTcpSocket socket; // 用于与远程设备通信的 TCP 套接字
-  QTimer *timer;     // 定时器，用于定期读取滑块值并发送
+  bool readySend = false;
+  QTcpSocket *socket; // 用于与远程设备通信的 TCP 套接字
+  QTcpServer *server;
+  QTimer *timer; // 定时器，用于定期读取滑块值并发送
   QLabel *statusCircleLabel,
       *videoStatusCircleLabel; // 用于显示连接状态圆圈的标签
   QLabel *statusTextLabel, *videoStatusTextLabel; // 用于显示连接状态文字的标签
@@ -53,5 +54,8 @@ private:
   void updateMenuBar();
   void initMenuBar();
   void sendCommand();
+
+private slots:
+  void onNewControlConnection();
 };
 #endif // BASE_H

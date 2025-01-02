@@ -1,29 +1,50 @@
 #include "include/base.h"
 #include "./ui_base.h"
 
-base::base(QWidget *parent) : QMainWindow(parent), ui(new Ui::base) {
+base::base(QWidget *parent)
+    : QMainWindow(parent), ui(new Ui::base), server(new QTcpServer(this)) {
   ui->setupUi(this);
 
-  // 初始化定时器，每500毫秒调用一次 onTimeout() 函数
+  // 初始化定时器，每50毫秒调用一次 onTimeout() 函数
   timer = new QTimer(this);
   connect(timer, &QTimer::timeout, this, &base::onTimeout);
   timer->start(50); // 每50毫秒触发一次
 
+  // 启动TCP服务器，监听端口
+  if (!server->listen(QHostAddress::Any, commandPort)) {
+    qDebug() << "Failed to start server!";
+    return;
+  }
+  qDebug() << "Server started, waiting for connection...";
+  qDebug() << "local server ip: " << server->serverAddress().toString();
+  // 连接新的客户端连接请求
+  connect(server, &QTcpServer::newConnection, this,
+          &base::onNewControlConnection);
+
   initStatusBar();
   initMenuBar();
   initPython();
-
-  // 创建 TCP 套接字并连接到远程主机（替换为目标主机的 IP 和端口）
-  socket.connectToHost(commandIP,
-                       commandPort); // 连接到本地（或远程机器的 IP）
-  if (!socket.waitForConnected()) {
-    qDebug() << "Failed to connect to host!";
-  }
 }
 
 base::~base() {
   delete ui;
-  socket.close(); // 关闭连接
+  socket->close(); // 关闭连接
+}
+
+void base::onNewControlConnection() {
+  // 获取新的连接（客户端）
+  socket = server->nextPendingConnection();
+  qDebug() << "Command client connected: " << socket->peerAddress().toString();
+  ui->textBrowser_PyOut->append("Remote ip: " +
+                                socket->peerAddress().toString());
+
+  updateConnectionStatus(statusCircleLabel, true); // 更新为已连接
+  readySend = true;
+  // 创建 TCP 套接字并连接信号槽
+  connect(socket, &QTcpSocket::disconnected, this, [=]() {
+    updateConnectionStatus(statusCircleLabel, false); // 更新为未连接
+    readySend = false;
+  });
 }
 
 void base::initPython() {
@@ -70,14 +91,6 @@ void base::initStatusBar() { // 创建 QLabel 来显示连接状态的圆圈和�
   statusBar()->addWidget(videoStatusTextLabel);
   statusBar()->addWidget(spacer3);
   statusBar()->addWidget(statusKBSLabel);
-
-  // 创建 TCP 套接字并连接信号槽
-  connect(&socket, &QTcpSocket::connected, this, [=]() {
-    updateConnectionStatus(statusCircleLabel, true); // 更新为已连接
-  });
-  connect(&socket, &QTcpSocket::disconnected, this, [=]() {
-    updateConnectionStatus(statusCircleLabel, false); // 更新为未连接
-  });
 }
 
 void base::initMenuBar() {
@@ -126,9 +139,9 @@ void base::sendCommand() {
   }
 
   // 发送数据到远程设备
-  socket.write(byteArray);
-  socket.waitForBytesWritten(); // 等待直到数据被写入
-  qDebug() << "Data sent: " << byteArray.toHex();
+  socket->write(byteArray);
+  socket->waitForBytesWritten(); // 等待直到数据被写入
+  // qDebug() << "Data sent: " << byteArray.toHex();
 }
 
 void base::onTimeout() {
@@ -154,6 +167,6 @@ void base::onTimeout() {
     }
   }
 
-  if (socket.state() == QAbstractSocket::ConnectedState)
+  if (readySend)
     sendCommand();
 }
