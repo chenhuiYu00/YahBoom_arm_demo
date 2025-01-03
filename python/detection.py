@@ -72,8 +72,8 @@ def start_client(host='127.0.0.1', port=12345):
                 current_time = time.time()
                 if current_time - last_time >= 1:  # 每秒输出一次
                     last_time = current_time
-                    print(f"Detected {len(results[0].boxes)} objects")  # 输出检测到的物体数量
-                    sys.stdout.flush()
+                    #print(f"Detected {len(results[0].boxes)} objects")  # 输出检测到的物体数量
+                    #sys.stdout.flush()
 
                 # 提取检测结果：boxes, labels, and scores
                 boxes = results[0].boxes  # 获取检测框（boxes）
@@ -100,13 +100,15 @@ def start_client(host='127.0.0.1', port=12345):
                 # 将视频帧编码成 JPEG 格式，并转发到 Qt
                 _, encoded_frame = cv2.imencode('.jpg', frame)
                 img_bytes = encoded_frame.tobytes()
-                # frame_data = pickle.dumps(encoded_frame)  # 使用 pickle 序列化数据,不能用因为发给QT解包不出来
-                message_size = struct.pack("!I", len(img_bytes))  # 数据包大小
-                # 发送数据包到 Qt 客户端
-                client_socket_qt.sendall(message_size + img_bytes)
+                detects = 999
+                if labels.numel() > 0:  # 第一个识别的目标
+                    detects = int(labels[0].item()) 
 
-                if cv2.waitKey(1) & 0xFF == ord('q'):
-                    break
+                # frame_data = pickle.dumps(encoded_frame)  # 使用 pickle 序列化数据,不能用因为发给QT解包不出来
+                detects_bytes = struct.pack("!I", detects)
+                message_size = struct.pack("!I", len(detects_bytes + img_bytes))  # 数据包大小
+                # 发送数据包到 Qt 客户端
+                client_socket_qt.sendall(message_size + detects_bytes + img_bytes)
 
             client_socket.close()
             print("Connection closed by server. Reconnecting...")

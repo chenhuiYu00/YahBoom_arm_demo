@@ -126,6 +126,7 @@ void base::sendCommand() {
   // 获取所有滑块的值并封装到字节数组中
   QByteArray byteArray;
 
+  detection = ui->widget_video->getDetect();
   byteArray.append(static_cast<char>(recentModel));
   byteArray.append(static_cast<char>(detection));
 

@@ -40,13 +40,16 @@ public:
 
   QAbstractSocket::SocketState getSocketState() { return tcpSocket->state(); }
   qfloat16 getKBS() { return kbs; };
+  int getDetect() { return detect; };
 
 private:
   Ui::VideoWidget *ui;
   int videoIP = 8187;    // 用于接受识别结果的IP
+  int detect = -1;       // 用于接收识别结果
   QTcpSocket *tcpSocket; // TCP连接
   QTcpServer *server;
   QTimer *frameTimer; // 定时器，用于处理视频帧更新
+  QTime lastReceiveTime;
 
   QTimer *rateTimer;         // 用于定时计算和更新码率
   qint64 totalReceivedBytes; // 总接收到的字节数

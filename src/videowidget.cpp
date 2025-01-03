@@ -92,9 +92,13 @@ void VideoWidget::onReadyRead() {
     // qDebug() << frameSize;
 
     if (data.size() >= frameSize) {
+      QDataStream stream(data.mid(0, sizeof(int)));
+      stream.setByteOrder(QDataStream::BigEndian); // 设置大端字节序
+      stream >> detect;                            // 读取整数
+
       // 完整的数据包，提取并显示
-      QByteArray frameData = data.left(static_cast<int>(frameSize));
-      data.remove(0, static_cast<int>(frameSize));
+      QByteArray frameData = data.mid(sizeof(int), static_cast<int>(frameSize));
+      data.remove(0, sizeof(int) + static_cast<int>(frameSize));
 
       // 将图像数据加载为 QImage 并显示
       QImage image;
@@ -105,6 +109,8 @@ void VideoWidget::onReadyRead() {
         qDebug() << "Unpack img fail";
       }
       frameSize = 0;
+
+      lastReceiveTime = QTime::currentTime();
     } else {
       break; // 等待更多数据
     }
@@ -153,6 +159,10 @@ void VideoWidget::drawBoundingBoxes(QPixmap &pixmap, double scaleX,
 
 void VideoWidget::onTimeout() {
   // 这里你可以处理帧更新，或者定时处理其他任务
+
+  // 超时重置
+  if (lastReceiveTime.elapsed() > 1000)
+    detect = 999;
 }
 
 void BoundingBox::draw(QPainter &painter, double scaleX, double scaleY) const {
