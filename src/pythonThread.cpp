@@ -52,18 +52,19 @@ void PythonThread::onStartScript() {
   connect(process, &QProcess::readyReadStandardOutput, [=]() {
     QString output = process->readAllStandardOutput();
     // 去除多余的换行符
-    output.replace(QRegExp("[\r\n]+"), " ");
-    output = output.trimmed(); // 去除开头和结尾的空格
-    qDebug() << output;
-    browser.append(output); // 将标准输出追加到 QTextBrowser
+    if (!output.isEmpty() && !output.trimmed().isEmpty()) { // 确保非空
+      qDebug() << output;
+      browser.append(output);
+    }
   });
   connect(process, &QProcess::readyReadStandardError, [=]() {
     QString errorOutput = process->readAllStandardError();
     // 去除多余的换行符
-    errorOutput.replace(QRegExp("[\r\n]+"), " ");
-    errorOutput = errorOutput.trimmed(); // 去除开头和结尾的空格
-    qDebug() << errorOutput;
-    browser.append(errorOutput); // 将标准错误追加到 QTextBrowser
+    if (!errorOutput.isEmpty() &&
+        !errorOutput.trimmed().isEmpty()) { // 确保非空
+      qDebug() << errorOutput;
+      browser.append(errorOutput);
+    }
   });
 
   // 检查脚本是否成功启动
