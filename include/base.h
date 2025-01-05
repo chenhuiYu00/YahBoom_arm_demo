@@ -54,6 +54,7 @@ private:
   void updateMenuBar();
   void initMenuBar();
   void sendCommand();
+  void updateResultLabel();
 
 private slots:
   void onNewControlConnection();

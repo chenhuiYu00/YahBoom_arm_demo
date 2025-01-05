@@ -134,7 +134,6 @@ void base::sendCommand() {
   // 获取所有滑块的值并封装到字节数组中
   QByteArray byteArray;
 
-  detection = ui->widget_video->getDetect();
   byteArray.append(static_cast<char>(recentModel));
   byteArray.append(static_cast<char>(detection));
 
@@ -151,6 +150,65 @@ void base::sendCommand() {
   socket->write(byteArray);
   socket->waitForBytesWritten(); // 等待直到数据被写入
   // qDebug() << "Data sent: " << byteArray.toHex();
+}
+
+void base::updateResultLabel() {
+  QString text;
+  QString color;
+
+  // 根据 detection 值设置文本和颜色
+  switch (detection) {
+  case 0:
+    text = "bow";
+    color = "blue"; // 设置颜色为蓝色
+    break;
+  case 1:
+    text = "down";
+    color = "red"; // 设置颜色为红色
+    break;
+  case 2:
+    text = "eight";
+    color = "green"; // 设置颜色为绿色
+    break;
+  case 3:
+    text = "five";
+    color = "orange"; // 设置颜色为橙色
+    break;
+  case 4:
+    text = "good";
+    color = "purple"; // 设置颜色为紫色
+    break;
+  case 5:
+    text = "handheart";
+    color = "pink"; // 设置颜色为粉色
+    break;
+  case 6:
+    text = "OK";
+    color = "cyan"; // 设置颜色为青色
+    break;
+  case 7:
+    text = "pray";
+    color = "pink"; // 设置颜色为粉色
+    break;
+  case 8:
+    text = "Rock";
+    color = "brown"; // 设置颜色为棕色
+    break;
+  case 9:
+    text = "seven";
+    color = "lime"; // 设置颜色为绿色
+    break;
+  default:
+    text = "NULL";   // 默认文本为 NULL
+    color = "black"; // 默认颜色为黑色
+    break;
+  }
+
+  // 更新 QLabel 的文本和颜色
+  ui->label_detectResult->setText(text);
+  ui->label_detectResult->setStyleSheet(
+      "color: " + color + ";" + "background-color: rgb(237, 242, 255);" +
+      "border-radius: 10px");
 }
 
 void base::onTimeout() {
@@ -176,6 +234,9 @@ void base::onTimeout() {
     }
   }
 
+  detection = ui->widget_video->getDetect();
   if (readySend)
     sendCommand();
+
+  updateResultLabel();
 }

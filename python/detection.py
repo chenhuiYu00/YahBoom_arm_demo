@@ -61,7 +61,7 @@ def start_client(host='127.0.0.1', port=12345):
                 encoded_frame = pickle.loads(frame_data)
                 frame = cv2.imdecode(encoded_frame, cv2.IMREAD_COLOR)
 
-                frame = cv2.resize(frame, (640, 480))
+                frame = cv2.resize(frame, (448, 336))
                 # cv2.imshow("Video Stream", frame)
 
                 ##########################深度处理#############################

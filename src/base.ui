@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1154</width>
+    <width>1119</width>
     <height>720</height>
    </rect>
   </property>
@@ -82,8 +82,32 @@ background:rgb(211, 215, 207);</string>
              <enum>Qt::LeftToRight</enum>
             </property>
             <property name="styleSheet">
-             <string notr="true">background:rgb(231, 235, 237)</string>
+             <string notr="true">background:rgb(231, 235, 237);</string>
             </property>
+            <layout class="QVBoxLayout" name="verticalLayout_3">
+             <item>
+              <widget class="QLabel" name="label_detectResult">
+               <property name="font">
+                <font>
+                 <family>Ubuntu</family>
+                 <pointsize>36</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background-color: rgb(237, 242, 255);/*背景颜色*/
+border-radius: 10px</string>
+               </property>
+               <property name="text">
+                <string>NULL</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
           <item>
@@ -92,6 +116,12 @@ background:rgb(211, 215, 207);</string>
              <string notr="true">background:rgb(231, 235, 237)</string>
             </property>
             <layout class="QGridLayout" name="gridLayout">
+             <property name="horizontalSpacing">
+              <number>6</number>
+             </property>
+             <property name="verticalSpacing">
+              <number>18</number>
+             </property>
              <item row="0" column="0">
               <widget class="QSlider" name="horizontalSlider_0">
                <property name="orientation">
@@ -291,7 +321,7 @@ QPushButton:pressed {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1154</width>
+     <width>1119</width>
      <height>28</height>
     </rect>
    </property>
