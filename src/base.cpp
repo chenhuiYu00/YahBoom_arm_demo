@@ -24,6 +24,14 @@ base::base(QWidget *parent)
   initStatusBar();
   initMenuBar();
   initPython();
+
+  // 初始化角度控制数值
+  ui->horizontalSlider_0->setValue(50);
+  ui->horizontalSlider_1->setValue(50);
+  ui->horizontalSlider_2->setValue(50);
+  ui->horizontalSlider_3->setValue(50);
+  ui->horizontalSlider_4->setValue(50);
+  ui->horizontalSlider_5->setValue(50);
 }
 
 base::~base() {
