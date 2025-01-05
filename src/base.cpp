@@ -180,7 +180,7 @@ void base::updateResultLabel() {
     break;
   case 5:
     text = "handheart";
-    color = "pink"; // 设置颜色为粉色
+    color = "slateblue"; // 设置颜色为石蓝色
     break;
   case 6:
     text = "OK";
