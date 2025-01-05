@@ -7,7 +7,6 @@ global isRunning
 
 def action(mode,action=4,angles=[]):
     isRunning = True
-    print(isRunning)
     if mode==1:
         if action == 0:
             clap()
