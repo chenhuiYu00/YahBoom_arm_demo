@@ -102,7 +102,7 @@ def start_client(host='127.0.0.1', port=12345):
                 img_bytes = encoded_frame.tobytes()
                 detects = 999
                 if labels.numel() > 0:  # 第一个识别的目标
-                    detects = int(labels[0].item()) 
+                    detects = int(torch.max(labels).item())  # 获取最大值
 
                 # frame_data = pickle.dumps(encoded_frame)  # 使用 pickle 序列化数据,不能用因为发给QT解包不出来
                 detects_bytes = struct.pack("!I", detects)
