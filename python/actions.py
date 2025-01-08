@@ -3,10 +3,8 @@ from Arm_Lib import Arm_Device
 
 Arm = Arm_Device()
 time.sleep(.1)
-global isRunning
-
+is_running = True
 def action(mode,action=4,angles=[]):
-    isRunning = True
     if mode==1:
         if action == 0:
             clap()
@@ -31,8 +29,6 @@ def action(mode,action=4,angles=[]):
     if mode==0:
         time.sleep(.2)
         Arm.Arm_serial_servo_write6(*angles,500)
-        
-    isRunning = False
 
 
 def clap():
@@ -94,16 +90,35 @@ def hope():
 
 def xia():
     Arm.Arm_serial_servo_write6(90, 120, 120, 70, 90, 90, 500)
-
-def dance():
-    Arm.Arm_serial_servo_write6(90, 90, 0, 90, 90, 90, 500)
     time.sleep(1)
     for i in range(3):
-        Arm.Arm_serial_servo_write6(90, 60, 60, 0, 90, 90, 500)
+        Arm.Arm_serial_servo_write6(90, 120, 120, 70, 180, 180, 500)
         time.sleep(1)
-        Arm.Arm_serial_servo_write6(90, 120, 120, 60, 90, 90, 1000)
+        Arm.Arm_serial_servo_write6(90, 120, 120, 70, 0, 180, 500)
+        time.sleep(.5)
+        Arm.Arm_serial_servo_write6(90, 120, 120, 70, 90, 180, 500)
+        time.sleep(.5)
+
+
+def dance():
+    Arm.Arm_serial_servo_write6(90, 90, 90, 90, 90, 180, 500)
+    time.sleep(1)
+    for i in range(3):
+        # Control the up and down operation of No. 3 and No. 4 steering gear
+        # 控制3号和4号舵机上下运行
+        Arm.Arm_serial_servo_write(1, 180, 500)
+        time.sleep(.5)
+        Arm.Arm_serial_servo_write(3, 0, 1000)
+        time.sleep(.5)
+        Arm.Arm_serial_servo_write(5, 0, 1000)
+        time.sleep(.5)
+        Arm.Arm_serial_servo_write(6, 180, 1000)
+        time.sleep(.5)
+        Arm.Arm_serial_servo_write(1, 0, 500)
+        time.sleep(.001)
+        Arm.Arm_serial_servo_write(6, 0, 1000)
+        time.sleep(.001)
+        Arm.Arm_serial_servo_write(4, 180, 1000)
         time.sleep(1)
-        Arm.Arm_serial_servo_write6(90, 70, 20, 0, 120, 90, 500)
-        time.sleep(1)
-        Arm.Arm_serial_servo_write6(90, 120, 20, 60, 60, 90, 500)
-        time.sleep(1)
+        Arm.Arm_serial_servo_write6(90, 90, 90, 90, 90, 180, 1000)
+        time.sleep(1.5)
